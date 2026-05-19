@@ -189,7 +189,7 @@ notebook_content = """{
 }
 """
 
-with open(r"C:\Users\Nasreen M H\Desktop\project\Elite_Customer_Churn_Project.ipynb", "w", encoding="utf-8") as f:
+with open("Elite_Customer_Churn_Project.ipynb", "w", encoding="utf-8") as f:
     f.write(notebook_content)
 
 print("Elite Notebook successfully generated!")

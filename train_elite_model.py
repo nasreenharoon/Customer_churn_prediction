@@ -28,7 +28,7 @@ print("STARTING ELITE ML PIPELINE FOR CUSTOMER CHURN")
 print("=====================================================\n")
 
 # 1. Load Dataset
-data_path = Path(r"C:\Users\Nasreen M H\Desktop\project\WA_Fn-UseC_-Telco-Customer-Churn.csv")
+data_path = Path("WA_Fn-UseC_-Telco-Customer-Churn.csv")
 print(f"Loading data from {data_path}...")
 df = pd.read_csv(data_path)
 
@@ -92,6 +92,96 @@ print(f"\nBest Parameters Found: {grid_search.best_params_}")
 print("\nEvaluating Elite Model on Test Data...")
 y_pred = best_model.predict(X_test)
 print(classification_report(y_test, y_pred, target_names=["No Churn", "Churn"]))
+
+# Generate and Save Plots as SVGs (Pure Python, No external dependencies like matplotlib)
+try:
+    # 1. Confusion Matrix SVG Plot
+    cm = confusion_matrix(y_test, y_pred)
+    tn, fp, fn, tp = cm.ravel()
+    
+    svg_cm = f"""<svg width="420" height="320" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; font-weight: bold; fill: #f0f2ff; }}
+    .label {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; fill: #8b93b0; font-weight: 500; }}
+    .val {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 18px; font-weight: bold; fill: #ffffff; }}
+    .cell {{ stroke: rgba(255,255,255,0.06); stroke-width: 1.5; }}
+  </style>
+  <rect width="100%" height="100%" fill="#0a0e1a" rx="12"/>
+  <text x="20" y="35" class="title">Confusion Matrix</text>
+  
+  <!-- Headers -->
+  <text x="175" y="70" class="label" text-anchor="middle">PREDICTED: NO</text>
+  <text x="305" y="70" class="label" text-anchor="middle">PREDICTED: YES</text>
+  
+  <text x="20" y="145" class="label">ACTUAL: NO</text>
+  <text x="20" y="235" class="label">ACTUAL: YES</text>
+  
+  <!-- Cells -->
+  <!-- Top Left: TN -->
+  <rect x="120" y="95" width="110" height="85" fill="#1e3a8a" class="cell" rx="6"/>
+  <text x="175" y="135" class="val" text-anchor="middle">{tn}</text>
+  <text x="175" y="155" class="label" text-anchor="middle" font-size="10" fill="#93c5fd">True Negative</text>
+  
+  <!-- Top Right: FP -->
+  <rect x="250" y="95" width="110" height="85" fill="#312e81" class="cell" rx="6"/>
+  <text x="305" y="135" class="val" text-anchor="middle">{fp}</text>
+  <text x="305" y="155" class="label" text-anchor="middle" font-size="10" fill="#a5b4fc">False Positive</text>
+  
+  <!-- Bottom Left: FN -->
+  <rect x="120" y="195" width="110" height="85" fill="#4c1d95" class="cell" rx="6"/>
+  <text x="175" y="235" class="val" text-anchor="middle">{fn}</text>
+  <text x="175" y="255" class="label" text-anchor="middle" font-size="10" fill="#c084fc">False Negative</text>
+  
+  <!-- Bottom Right: TP -->
+  <rect x="250" y="195" width="110" height="85" fill="#065f46" class="cell" rx="6"/>
+  <text x="305" y="235" class="val" text-anchor="middle">{tp}</text>
+  <text x="305" y="255" class="label" text-anchor="middle" font-size="10" fill="#34d399">True Positive</text>
+</svg>"""
+    
+    with open('static/confusion_matrix.svg', 'w') as f:
+        f.write(svg_cm)
+    print("Saved static/confusion_matrix.svg")
+
+    # 2. Feature Importance SVG Plot
+    importances = best_model.feature_importances_
+    features = list(X.columns)
+    indices = np.argsort(importances)[::-1]
+    
+    svg_fe = """<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; font-weight: bold; fill: #f0f2ff; }
+    .label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; fill: #8b93b0; }
+    .bar { fill: url(#barGrad); }
+    .bar-val { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; fill: #f0f2ff; font-weight: bold; }
+  </style>
+  <defs>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c6df9" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#0a0e1a" rx="12"/>
+  <text x="20" y="35" class="title">Top 10 Feature Importances</text>
+"""
+    
+    max_importance = importances[indices[0]]
+    y_offset = 70
+    for i in range(10):
+        feat_name = features[indices[i]]
+        feat_val = importances[indices[i]]
+        bar_width = int((feat_val / max_importance) * 350)
+        svg_fe += f"""  <text x="20" y="{y_offset + 14}" class="label">{feat_name}</text>\n"""
+        svg_fe += f"""  <rect x="180" y="{y_offset}" width="{bar_width}" height="20" class="bar" rx="3"/>\n"""
+        svg_fe += f"""  <text x="{180 + bar_width + 10}" y="{y_offset + 14}" class="bar-val">{feat_val:.4f}</text>\n"""
+        y_offset += 30
+        
+    svg_fe += "</svg>"
+    
+    with open('static/feature_importances.svg', 'w') as f:
+        f.write(svg_fe)
+    print("Saved static/feature_importances.svg")
+except Exception as e:
+    print(f"Could not generate SVG plots: {e}")
 
 # 8. Exporting Artifacts
 model_path = "customer_churn_model.pkl"

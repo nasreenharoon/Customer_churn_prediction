@@ -1,0 +1,46 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; font-weight: bold; fill: #f0f2ff; }
+    .label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; fill: #8b93b0; }
+    .bar { fill: url(#barGrad); }
+    .bar-val { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; fill: #f0f2ff; font-weight: bold; }
+  </style>
+  <defs>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c6df9" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#0a0e1a" rx="12"/>
+  <text x="20" y="35" class="title">Top 10 Feature Importances</text>
+  <text x="20" y="84" class="label">Contract</text>
+  <rect x="180" y="70" width="350" height="20" class="bar" rx="3"/>
+  <text x="540" y="84" class="bar-val">0.1960</text>
+  <text x="20" y="114" class="label">OnlineSecurity</text>
+  <rect x="180" y="100" width="220" height="20" class="bar" rx="3"/>
+  <text x="410" y="114" class="bar-val">0.1233</text>
+  <text x="20" y="144" class="label">TechSupport</text>
+  <rect x="180" y="130" width="202" height="20" class="bar" rx="3"/>
+  <text x="392" y="144" class="bar-val">0.1134</text>
+  <text x="20" y="174" class="label">tenure</text>
+  <rect x="180" y="160" width="188" height="20" class="bar" rx="3"/>
+  <text x="378" y="174" class="bar-val">0.1055</text>
+  <text x="20" y="204" class="label">MonthlyCharges</text>
+  <rect x="180" y="190" width="170" height="20" class="bar" rx="3"/>
+  <text x="360" y="204" class="bar-val">0.0952</text>
+  <text x="20" y="234" class="label">TotalCharges</text>
+  <rect x="180" y="220" width="149" height="20" class="bar" rx="3"/>
+  <text x="339" y="234" class="bar-val">0.0837</text>
+  <text x="20" y="264" class="label">OnlineBackup</text>
+  <rect x="180" y="250" width="96" height="20" class="bar" rx="3"/>
+  <text x="286" y="264" class="bar-val">0.0540</text>
+  <text x="20" y="294" class="label">Dependents</text>
+  <rect x="180" y="280" width="66" height="20" class="bar" rx="3"/>
+  <text x="256" y="294" class="bar-val">0.0374</text>
+  <text x="20" y="324" class="label">InternetService</text>
+  <rect x="180" y="310" width="59" height="20" class="bar" rx="3"/>
+  <text x="249" y="324" class="bar-val">0.0334</text>
+  <text x="20" y="354" class="label">Partner</text>
+  <rect x="180" y="340" width="58" height="20" class="bar" rx="3"/>
+  <text x="248" y="354" class="bar-val">0.0325</text>
+</svg>
