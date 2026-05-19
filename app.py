@@ -74,7 +74,8 @@ def preprocess_input(input_data: dict) -> pd.DataFrame:
 
     # Encode categorical columns
     for col, encoder in encoders.items():
-        df[col] = encoder.transform(df[col])
+        if col in df.columns:
+            df[col] = encoder.transform(df[col])
 
     return df
 
