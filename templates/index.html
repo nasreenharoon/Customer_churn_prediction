@@ -11,24 +11,24 @@
 </head>
 <body>
 
-  <!-- Animated blobs in background -->
+  <!-- Animated background blobs -->
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
   <div class="blob blob-3"></div>
 
   <div class="page-wrapper">
 
-    <!-- Header / Hero -->
+    <!-- Header -->
     <header class="hero">
       <div class="hero-badge">
         <span class="badge-dot"></span>
-        AI-Powered Prediction Engine
+        AI-Powered Customer Intelligence
       </div>
       <h1>ChurnIQ</h1>
-      <p class="hero-sub">Predict customer churn before it happens. Retain revenue. Grow smarter.</p>
+      <p class="hero-sub">Predict customer churn before it happens. Optimize retention. Secure revenue.</p>
     </header>
 
-    <!-- Stats Bar -->
+    <!-- Stats Highlight Bar -->
     <div class="stats-bar">
       <div class="stat">
         <span class="stat-val">7,043</span>
@@ -36,127 +36,284 @@
       </div>
       <div class="stat-divider"></div>
       <div class="stat">
-        <span class="stat-val">80%+</span>
-        <span class="stat-label">Model Recall</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
         <span class="stat-val">SMOTE</span>
-        <span class="stat-label">Balanced Training</span>
+        <span class="stat-label">Class Balanced</span>
       </div>
       <div class="stat-divider"></div>
       <div class="stat">
-        <span class="stat-val">RF + XAI</span>
+        <span class="stat-val">Random Forest</span>
+        <span class="stat-label">Tuned Algorithm</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-val">SHAP (XAI)</span>
         <span class="stat-label">Explainable AI</span>
       </div>
     </div>
 
-    <!-- Main Card -->
-    <form action="{{ url_for('predict') }}" method="POST" class="card">
-      <div class="card-header">
-        <div class="card-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-          Customer Profile Analysis
+    <!-- Main Prediction Form -->
+    <form action="{{ url_for('predict') }}" method="POST" id="churnForm">
+      
+      <!-- Grid of Section Cards -->
+      <div class="dashboard-grid">
+        
+        <!-- Section 1: Demographics -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">👤</div>
+            <h3>Demographics</h3>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select name="gender" required>
+              <option value="Male" {{ 'selected' if form_values and form_values.get('gender')=='Male' else '' }}>Male</option>
+              <option value="Female" {{ 'selected' if form_values and form_values.get('gender')=='Female' else '' }}>Female</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Senior Citizen</label>
+            <select name="SeniorCitizen" required>
+              <option value="0" {{ 'selected' if form_values and form_values.get('SeniorCitizen')=='0' else '' }}>No</option>
+              <option value="1" {{ 'selected' if form_values and form_values.get('SeniorCitizen')=='1' else '' }}>Yes</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Has Partner</label>
+            <select name="Partner" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('Partner')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('Partner')=='Yes' else '' }}>Yes</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Has Dependents</label>
+            <select name="Dependents" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('Dependents')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('Dependents')=='Yes' else '' }}>Yes</option>
+            </select>
+          </div>
         </div>
-        <div class="card-sub">Fill in customer details to analyze churn risk</div>
+
+        <!-- Section 2: Core Services -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">📞</div>
+            <h3>Core Services</h3>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Service</label>
+            <select name="PhoneService" required>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('PhoneService')=='Yes' else '' }}>Yes</option>
+              <option value="No" {{ 'selected' if form_values and form_values.get('PhoneService')=='No' else '' }}>No</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Multiple Lines</label>
+            <select name="MultipleLines" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('MultipleLines')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('MultipleLines')=='Yes' else '' }}>Yes</option>
+              <option value="No phone service" {{ 'selected' if form_values and form_values.get('MultipleLines')=='No phone service' else '' }}>No phone service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Internet Service</label>
+            <select name="InternetService" required>
+              <option value="Fiber optic" {{ 'selected' if form_values and form_values.get('InternetService')=='Fiber optic' else '' }}>Fiber optic</option>
+              <option value="DSL" {{ 'selected' if form_values and form_values.get('InternetService')=='DSL' else '' }}>DSL</option>
+              <option value="No" {{ 'selected' if form_values and form_values.get('InternetService')=='No' else '' }}>No</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Streaming TV</label>
+            <select name="StreamingTV" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('StreamingTV')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('StreamingTV')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('StreamingTV')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Streaming Movies</label>
+            <select name="StreamingMovies" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('StreamingMovies')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('StreamingMovies')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('StreamingMovies')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 3: Add-on Security & Support -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">🛡️</div>
+            <h3>Security & Support</h3>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Online Security</label>
+            <select name="OnlineSecurity" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('OnlineSecurity')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('OnlineSecurity')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('OnlineSecurity')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Online Backup</label>
+            <select name="OnlineBackup" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('OnlineBackup')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('OnlineBackup')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('OnlineBackup')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Device Protection</label>
+            <select name="DeviceProtection" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('DeviceProtection')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('DeviceProtection')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('DeviceProtection')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tech Support</label>
+            <select name="TechSupport" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('TechSupport')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('TechSupport')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('TechSupport')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 4: Billing & Contract -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">💳</div>
+            <h3>Billing & Contract</h3>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contract Type</label>
+            <select name="Contract" required>
+              <option value="Month-to-month" {{ 'selected' if form_values and form_values.get('Contract')=='Month-to-month' else '' }}>Month-to-month</option>
+              <option value="One year" {{ 'selected' if form_values and form_values.get('Contract')=='One year' else '' }}>One year</option>
+              <option value="Two year" {{ 'selected' if form_values and form_values.get('Contract')=='Two year' else '' }}>Two year</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Paperless Billing</label>
+            <select name="PaperlessBilling" required>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('PaperlessBilling')=='Yes' else '' }}>Yes</option>
+              <option value="No" {{ 'selected' if form_values and form_values.get('PaperlessBilling')=='No' else '' }}>No</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Payment Method</label>
+            <select name="PaymentMethod" required>
+              <option value="Electronic check" {{ 'selected' if form_values and form_values.get('PaymentMethod')=='Electronic check' else '' }}>Electronic check</option>
+              <option value="Mailed check" {{ 'selected' if form_values and form_values.get('PaymentMethod')=='Mailed check' else '' }}>Mailed check</option>
+              <option value="Bank transfer (automatic)" {{ 'selected' if form_values and form_values.get('PaymentMethod')=='Bank transfer (automatic)' else '' }}>Bank transfer (automatic)</option>
+              <option value="Credit card (automatic)" {{ 'selected' if form_values and form_values.get('PaymentMethod')=='Credit card (automatic)' else '' }}>Credit card (automatic)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tenure (months)</label>
+            <input type="number" name="tenure" id="tenure" min="0" max="120" required placeholder="e.g. 12"
+                   value="{{ form_values.get('tenure','12') if form_values else '12' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Monthly Charges ($)</label>
+            <input type="number" name="MonthlyCharges" id="MonthlyCharges" min="0" step="0.01" required placeholder="e.g. 70.00"
+                   value="{{ form_values.get('MonthlyCharges','70.00') if form_values else '70.00' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Total Charges ($)</label>
+            <input type="number" name="TotalCharges" id="TotalCharges" min="0" step="0.01" required placeholder="Auto-calculated"
+                   value="{{ form_values.get('TotalCharges','840.00') if form_values else '840.00' }}">
+          </div>
+        </div>
+
       </div>
 
-      <div class="form-grid">
-        <!-- Gender -->
-        <div class="form-group">
-          <label class="form-label">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Gender
-          </label>
-          <select name="gender" required>
-            <option value="">Select gender</option>
-            <option value="Male" {{ 'selected' if form_values and form_values.get('gender')=='Male' else '' }}>Male</option>
-            <option value="Female" {{ 'selected' if form_values and form_values.get('gender')=='Female' else '' }}>Female</option>
-          </select>
-        </div>
-
-        <!-- Senior Citizen -->
-        <div class="form-group">
-          <label class="form-label">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            Senior Citizen
-          </label>
-          <select name="SeniorCitizen" required>
-            <option value="">Select</option>
-            <option value="0" {{ 'selected' if form_values and form_values.get('SeniorCitizen')=='0' else '' }}>No</option>
-            <option value="1" {{ 'selected' if form_values and form_values.get('SeniorCitizen')=='1' else '' }}>Yes</option>
-          </select>
-        </div>
-
-        <!-- Tenure -->
-        <div class="form-group">
-          <label class="form-label">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Tenure (months)
-          </label>
-          <input type="number" name="tenure" min="0" max="120" placeholder="e.g. 24"
-                 value="{{ form_values.get('tenure','') if form_values else '' }}">
-        </div>
-
-        <!-- Monthly Charges -->
-        <div class="form-group">
-          <label class="form-label">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Monthly Charges
-          </label>
-          <input type="number" name="MonthlyCharges" min="0" step="0.01" placeholder="e.g. 75.50"
-                 value="{{ form_values.get('MonthlyCharges','') if form_values else '' }}">
-        </div>
-
-        <!-- Contract -->
-        <div class="form-group full-width">
-          <label class="form-label">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Contract Type
-          </label>
-          <select name="Contract" required>
-            <option value="">Select contract type</option>
-            <option value="Month-to-month" {{ 'selected' if form_values and form_values.get('Contract')=='Month-to-month' else '' }}>Month-to-month</option>
-            <option value="One year" {{ 'selected' if form_values and form_values.get('Contract')=='One year' else '' }}>One year</option>
-            <option value="Two year" {{ 'selected' if form_values and form_values.get('Contract')=='Two year' else '' }}>Two year</option>
-          </select>
-        </div>
-
-        <!-- Submit -->
+      <!-- Submit Section -->
+      <div class="submit-container">
         <button type="submit" class="btn-submit">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Run AI Analysis
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Run Predictive AI Analysis
         </button>
       </div>
+
     </form>
 
-    <!-- Result -->
+    <!-- Prediction Result Block -->
     {% if prediction %}
     {% set is_churn = 'Yes' in prediction %}
-    <div class="result-card {{ 'danger' if is_churn else 'safe' }}">
+    <div class="result-card {{ 'danger' if is_churn else 'safe' }}" id="resultSection">
       <div class="result-icon">{{ '⚠️' if is_churn else '✅' }}</div>
       <div class="result-body">
-        <div class="result-title">{{ 'High Churn Risk Detected' if is_churn else 'Customer Likely to Stay' }}</div>
-        <div class="result-detail">{{ prediction }}</div>
+        <div class="result-title">{{ 'High Churn Risk Detected' if is_churn else 'Customer Likely to Remain Loyal' }}</div>
+        <div class="result-detail">Model Output: <strong>{{ prediction }}</strong></div>
         <div class="result-advice">
+          <strong>Strategic Recommendation:</strong> 
           {% if is_churn %}
-          Recommend proactive retention: offer a discount, upgrade plan, or dedicated support call.
+          This customer exhibits behaviors highly correlated with attrition. We recommend immediate proactive engagement: offer a loyalty discount (e.g., 15% off next bill), suggest transitioning to a 1 or 2-year contract, or resolve any pending service issues.
           {% else %}
-          Customer profile looks stable. Continue monitoring tenure and monthly charge trends.
+          The customer profile indicates low risk of near-term churn. Continue standard service support and target with cross-sell campaigns for high-tier addon services.
           {% endif %}
         </div>
       </div>
       <div class="result-badge {{ 'badge-danger' if is_churn else 'badge-safe' }}">
-        {{ 'AT RISK' if is_churn else 'RETAINED' }}
+        {{ 'AT RISK' if is_churn else 'SECURED' }}
       </div>
     </div>
     {% endif %}
 
+    <!-- Footer -->
     <footer class="footer">
-      Built with Random Forest &bull; SMOTE Balancing &bull; SHAP Explainability &mdash; <span>ChurnIQ Intelligence Platform</span>
+      Powered by Random Forest Engine &bull; SMOTE Oversampling &bull; SHAP Explainability &mdash; <span>ChurnIQ Dashboard v1.2</span>
     </footer>
 
   </div>
+
+  <!-- Smart auto-calculation of Total Charges -->
+  <script>
+    const tenureInput = document.getElementById('tenure');
+    const monthlyInput = document.getElementById('MonthlyCharges');
+    const totalInput = document.getElementById('TotalCharges');
+
+    function calculateTotal() {
+      const tenure = parseFloat(tenureInput.value) || 0;
+      const monthly = parseFloat(monthlyInput.value) || 0;
+      // Suggested total calculation if user hasn't explicitly customized it
+      if (tenure > 0 && monthly > 0) {
+        totalInput.value = (tenure * monthly).toFixed(2);
+      }
+    }
+
+    tenureInput.addEventListener('input', calculateTotal);
+    monthlyInput.addEventListener('input', calculateTotal);
+
+    // Scroll to results automatically if they exist
+    window.addEventListener('DOMContentLoaded', () => {
+      const resultBlock = document.getElementById('resultSection');
+      if (resultBlock) {
+        resultBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  </script>
 
 </body>
 </html>
