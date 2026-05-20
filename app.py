@@ -97,20 +97,92 @@ def predict_churn(input_data: dict):
 # =========================================================
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
-
-@app.route("/predict", methods=["POST"])
-def predict():
     try:
-        data = request.form.to_dict()
-        result = predict_churn(data)
-        return render_template(
-            "index.html",
-            prediction=f"{result['Churn']} (Probability: {result['Probability']})",
-            form_values=data
-        )
+        # Load dataset to extract real statistics for the business dashboard
+        df_raw = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
+        
+        total_customers = len(df_raw)
+        churn_count = len(df_raw[df_raw['Churn'] == 'Yes'])
+        churn_rate = round((churn_count / total_customers) * 100, 2)
+        
+        # Calculate charges
+        avg_monthly_charges = round(df_raw['MonthlyCharges'].mean(), 2)
+        df_raw['TotalCharges'] = pd.to_numeric(df_raw['TotalCharges'], errors='coerce')
+        total_revenue_m = round(df_raw['TotalCharges'].sum() / 1_000_000, 2)
+        
+        # Internet service splits
+        internet_groups = df_raw.groupby('InternetService')['Churn'].value_counts().unstack().fillna(0)
+        internet_labels = list(internet_groups.index)
+        internet_total = [int(x) for x in internet_groups.sum(axis=1)]
+        internet_churn = [int(x) for x in internet_groups.get('Yes', [0,0,0])]
+        
+        # Contract splits
+        contract_groups = df_raw.groupby('Contract')['Churn'].value_counts().unstack().fillna(0)
+        contract_labels = list(contract_groups.index)
+        contract_total = [int(x) for x in contract_groups.sum(axis=1)]
+        contract_churn = [int(x) for x in contract_groups.get('Yes', [0,0,0])]
+        
+        # Gender splits
+        gender_groups = df_raw.groupby('gender')['Churn'].value_counts().unstack().fillna(0)
+        gender_labels = list(gender_groups.index)
+        gender_total = [int(x) for x in gender_groups.sum(axis=1)]
+        gender_churn = [int(x) for x in gender_groups.get('Yes', [0,0])]
+
+        stats = {
+            "total_customers": total_customers,
+            "churn_count": churn_count,
+            "churn_rate": churn_rate,
+            "avg_monthly_charges": avg_monthly_charges,
+            "total_revenue_m": total_revenue_m,
+            "internet": {
+                "labels": internet_labels,
+                "total": internet_total,
+                "churn": internet_churn
+            },
+            "contract": {
+                "labels": contract_labels,
+                "total": contract_total,
+                "churn": contract_churn
+            },
+            "gender": {
+                "labels": gender_labels,
+                "total": gender_total,
+                "churn": gender_churn
+            }
+        }
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        # Fallback default statistics if dataset is missing
+        stats = {
+            "total_customers": 7043,
+            "churn_count": 1869,
+            "churn_rate": 26.54,
+            "avg_monthly_charges": 64.76,
+            "total_revenue_m": 16.06,
+            "internet": {"labels": ["DSL", "Fiber optic", "No"], "total": [2421, 3096, 1526], "churn": [459, 1297, 113]},
+            "contract": {"labels": ["Month-to-month", "One year", "Two year"], "total": [3875, 1473, 1695], "churn": [1655, 166, 48]},
+            "gender": {"labels": ["Female", "Male"], "total": [3488, 3555], "churn": [939, 930]}
+        }
+
+    return render_template("dashboard.html", stats=stats)
+
+@app.route("/predict", methods=["GET", "POST"])
+def predict():
+    if request.method == "POST":
+        try:
+            data = request.form.to_dict()
+            result = predict_churn(data)
+            return render_template(
+                "predict.html",
+                prediction=f"{result['Churn']} (Probability: {result['Probability']})",
+                form_values=data
+            )
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+    return render_template("predict.html", form_values=None)
+
+@app.route("/explain", methods=["GET"])
+def explain():
+    return render_template("explain.html")
 
 # =========================================================
 # Run app

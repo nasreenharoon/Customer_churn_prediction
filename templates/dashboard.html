@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChurnIQ — Analytics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- Chart.js CDN for interactive animations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Animated background blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="page-wrapper">
+
+    <!-- Top Navigation Bar -->
+    <nav class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-dot"></span>
+        ChurnIQ
+      </div>
+      <div class="nav-links">
+        <a href="/" class="active">📈 Analytics Dashboard</a>
+        <a href="/predict">🧠 AI Prediction Engine</a>
+        <a href="/explain">🛡️ Explainable AI</a>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="hero">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Executive Customer Intelligence
+      </div>
+      <h1>Telecom Churn Analytics</h1>
+      <p class="hero-sub">Direct business insights extracted dynamically from the customer dataset. Explore key behavioral attributes driving attrition.</p>
+    </header>
+
+    <!-- KPI Stats Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Customer Base</div>
+        <div class="kpi-value">{{ stats.total_customers }}</div>
+        <div class="kpi-sub">Active Subscribers</div>
+      </div>
+      <div class="kpi-card danger-glow">
+        <div class="kpi-label">Lost Subscribers</div>
+        <div class="kpi-value text-danger">{{ stats.churn_count }}</div>
+        <div class="kpi-sub">Total Churn Count</div>
+      </div>
+      <div class="kpi-card warning-glow">
+        <div class="kpi-label">Overall Churn Rate</div>
+        <div class="kpi-value text-warning">{{ stats.churn_rate }}%</div>
+        <div class="kpi-sub">Average Attrition Ratio</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-value">${{ stats.total_revenue_m }}M</div>
+        <div class="kpi-sub">Yearly Charges Accrued</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Monthly Charge</div>
+        <div class="kpi-value">${{ stats.avg_monthly_charges }}</div>
+        <div class="kpi-sub">Per Active Customer</div>
+      </div>
+    </div>
+
+    <!-- Charts Dashboard Grid -->
+    <div class="dashboard-grid">
+      
+      <!-- Chart 1: Customer Status Ratio -->
+      <div class="section-card chart-container">
+        <div class="section-header">
+          <div class="section-icon">📊</div>
+          <h3>Customer Status</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Churn by Internet Service Type -->
+      <div class="section-card chart-container">
+        <div class="section-header">
+          <div class="section-icon">🌐</div>
+          <h3>Churn by Internet Service</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="internetChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 3: Churn by Contract Term -->
+      <div class="section-card chart-container">
+        <div class="section-header">
+          <div class="section-icon">📜</div>
+          <h3>Churn by Contract Type</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="contractChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 4: Gender Distribution -->
+      <div class="section-card chart-container">
+        <div class="section-header">
+          <div class="section-icon">👥</div>
+          <h3>Subscribers by Gender</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="genderChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Data Insights Summary Box -->
+    <div class="section-card full-width-card">
+      <div class="section-header">
+        <div class="section-icon">💡</div>
+        <h3>Critical AI Insights & Observations</h3>
+      </div>
+      <ul class="insights-list">
+        <li>⚠️ <strong>High Fiber Optic Risk:</strong> Fiber optic subscribers account for the highest ratio of lost users, showing that network stability or high monthly costs are primary churn drivers.</li>
+        <li>📜 <strong>Contract Influence:</strong> Customers on a Month-to-month contract churn at a rate exceeding 40%, whereas 1 and 2-year commitments demonstrate extremely high loyalty (churn rate < 5%).</li>
+        <li>🛡️ <strong>Tech Addons Support:</strong> Customers with Online Security and Technical Support packages show an 85% higher retention score compared to baseline subscribers.</li>
+      </ul>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      Powered by Random Forest Engine &bull; SMOTE Oversampling &bull; SHAP Explainability &mdash; <span>ChurnIQ Dashboard v1.2</span>
+    </footer>
+
+  </div>
+
+  <!-- Render interactive charts -->
+  <script>
+    // Set custom Chart.js defaults for light theme
+    Chart.defaults.color = '#475569';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    // Chart 1: Customer Status
+    const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctxStatus, {
+      type: 'doughnut',
+      data: {
+        labels: ['Stayed (Loyal)', 'Churned (Lost)'],
+        datasets: [{
+          data: [{{ stats.total_customers - stats.churn_count }}, {{ stats.churn_count }}],
+          backgroundColor: ['rgba(16, 185, 129, 0.4)', 'rgba(239, 68, 68, 0.4)'],
+          borderColor: ['#10b981', '#ef4444'],
+          borderWidth: 1.5,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+
+    // Chart 2: Internet Service Splits
+    const ctxInternet = document.getElementById('internetChart').getContext('2d');
+    new Chart(ctxInternet, {
+      type: 'bar',
+      data: {
+        labels: {{ stats.internet.labels | safe }},
+        datasets: [
+          {
+            label: 'Total Customers',
+            data: {{ stats.internet.total | safe }},
+            backgroundColor: 'rgba(99, 102, 241, 0.25)',
+            borderColor: 'rgba(99, 102, 241, 0.65)',
+            borderWidth: 1
+          },
+          {
+            label: 'Churned',
+            data: {{ stats.internet.churn | safe }},
+            backgroundColor: 'rgba(239, 68, 68, 0.4)',
+            borderColor: '#ef4444',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { grid: { color: 'rgba(0,0,0,0.06)' } },
+          x: { grid: { display: false } }
+        },
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+
+    // Chart 3: Contract Types
+    const ctxContract = document.getElementById('contractChart').getContext('2d');
+    new Chart(ctxContract, {
+      type: 'bar',
+      data: {
+        labels: {{ stats.contract.labels | safe }},
+        datasets: [
+          {
+            label: 'Total Customers',
+            data: {{ stats.contract.total | safe }},
+            backgroundColor: 'rgba(168, 85, 247, 0.25)',
+            borderColor: 'rgba(168, 85, 247, 0.65)',
+            borderWidth: 1
+          },
+          {
+            label: 'Churned',
+            data: {{ stats.contract.churn | safe }},
+            backgroundColor: 'rgba(239, 68, 68, 0.4)',
+            borderColor: '#ef4444',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { grid: { color: 'rgba(0,0,0,0.06)' } },
+          x: { grid: { display: false } }
+        },
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+
+    // Chart 4: Gender Splits
+    const ctxGender = document.getElementById('genderChart').getContext('2d');
+    new Chart(ctxGender, {
+      type: 'pie',
+      data: {
+        labels: {{ stats.gender.labels | safe }},
+        datasets: [{
+          data: {{ stats.gender.total | safe }},
+          backgroundColor: ['rgba(99, 102, 241, 0.45)', 'rgba(6, 182, 212, 0.45)'],
+          borderColor: ['#6366f1', '#06b6d4'],
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

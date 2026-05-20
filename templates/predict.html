@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChurnIQ — AI Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- Animated background blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="page-wrapper">
+
+    <!-- Top Navigation Bar -->
+    <nav class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-dot"></span>
+        ChurnIQ
+      </div>
+      <div class="nav-links">
+        <a href="/">📈 Analytics Dashboard</a>
+        <a href="/predict" class="active">🧠 AI Prediction Engine</a>
+        <a href="/explain">🛡️ Explainable AI</a>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="hero">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        AI-Powered Predictive Engine
+      </div>
+      <h1>Customer Churn Predictor</h1>
+      <p class="hero-sub">Enter a customer profile below to run the optimized Random Forest classifier and evaluate churn probability in real time.</p>
+    </header>
+
+    <!-- Main Prediction Form -->
+    <form action="/predict" method="POST" id="churnForm">
+      
+      <!-- Grid of Section Cards -->
+      <div class="dashboard-grid">
+        
+        <!-- Section 1: Demographics -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">👤</div>
+            <h3>Demographics</h3>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select name="gender" required>
+              <option value="Male" {{ 'selected' if form_values and form_values.get('gender')=='Male' else '' }}>Male</option>
+              <option value="Female" {{ 'selected' if form_values and form_values.get('gender')=='Female' else '' }}>Female</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Senior Citizen</label>
+            <select name="SeniorCitizen" required>
+              <option value="0" {{ 'selected' if form_values and form_values.get('SeniorCitizen')=='0' else '' }}>No</option>
+              <option value="1" {{ 'selected' if form_values and form_values.get('SeniorCitizen')=='1' else '' }}>Yes</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Has Partner</label>
+            <select name="Partner" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('Partner')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('Partner')=='Yes' else '' }}>Yes</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Has Dependents</label>
+            <select name="Dependents" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('Dependents')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('Dependents')=='Yes' else '' }}>Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 2: Core Services -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">📞</div>
+            <h3>Core Services</h3>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Service</label>
+            <select name="PhoneService" required>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('PhoneService')=='Yes' else '' }}>Yes</option>
+              <option value="No" {{ 'selected' if form_values and form_values.get('PhoneService')=='No' else '' }}>No</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Multiple Lines</label>
+            <select name="MultipleLines" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('MultipleLines')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('MultipleLines')=='Yes' else '' }}>Yes</option>
+              <option value="No phone service" {{ 'selected' if form_values and form_values.get('MultipleLines')=='No phone service' else '' }}>No phone service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Internet Service</label>
+            <select name="InternetService" required>
+              <option value="Fiber optic" {{ 'selected' if form_values and form_values.get('InternetService')=='Fiber optic' else '' }}>Fiber optic</option>
+              <option value="DSL" {{ 'selected' if form_values and form_values.get('InternetService')=='DSL' else '' }}>DSL</option>
+              <option value="No" {{ 'selected' if form_values and form_values.get('InternetService')=='No' else '' }}>No</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Streaming TV</label>
+            <select name="StreamingTV" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('StreamingTV')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('StreamingTV')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('StreamingTV')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Streaming Movies</label>
+            <select name="StreamingMovies" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('StreamingMovies')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('StreamingMovies')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('StreamingMovies')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 3: Add-on Security & Support -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">🛡️</div>
+            <h3>Security & Support</h3>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Online Security</label>
+            <select name="OnlineSecurity" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('OnlineSecurity')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('OnlineSecurity')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('OnlineSecurity')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Online Backup</label>
+            <select name="OnlineBackup" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('OnlineBackup')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('OnlineBackup')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('OnlineBackup')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Device Protection</label>
+            <select name="DeviceProtection" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('DeviceProtection')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('DeviceProtection')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('DeviceProtection')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tech Support</label>
+            <select name="TechSupport" required>
+              <option value="No" {{ 'selected' if form_values and form_values.get('TechSupport')=='No' else '' }}>No</option>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('TechSupport')=='Yes' else '' }}>Yes</option>
+              <option value="No internet service" {{ 'selected' if form_values and form_values.get('TechSupport')=='No internet service' else '' }}>No internet service</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 4: Billing & Contract -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">💳</div>
+            <h3>Billing & Contract</h3>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contract Type</label>
+            <select name="Contract" required>
+              <option value="Month-to-month" {{ 'selected' if form_values and form_values.get('Contract')=='Month-to-month' else '' }}>Month-to-month</option>
+              <option value="One year" {{ 'selected' if form_values and form_values.get('Contract')=='One year' else '' }}>One year</option>
+              <option value="Two year" {{ 'selected' if form_values and form_values.get('Contract')=='Two year' else '' }}>Two year</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Paperless Billing</label>
+            <select name="PaperlessBilling" required>
+              <option value="Yes" {{ 'selected' if form_values and form_values.get('PaperlessBilling')=='Yes' else '' }}>Yes</option>
+              <option value="No" {{ 'selected' if form_values and form_values.get('PaperlessBilling')=='No' else '' }}>No</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Payment Method</label>
+            <select name="PaymentMethod" required>
+              <option value="Electronic check" {{ 'selected' if form_values and form_values.get('PaymentMethod')=='Electronic check' else '' }}>Electronic check</option>
+              <option value="Mailed check" {{ 'selected' if form_values and form_values.get('PaymentMethod')=='Mailed check' else '' }}>Mailed check</option>
+              <option value="Bank transfer (automatic)" {{ 'selected' if form_values and form_values.get('PaymentMethod')=='Bank transfer (automatic)' else '' }}>Bank transfer (automatic)</option>
+              <option value="Credit card (automatic)" {{ 'selected' if form_values and form_values.get('PaymentMethod')=='Credit card (automatic)' else '' }}>Credit card (automatic)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tenure (months)</label>
+            <input type="number" name="tenure" id="tenure" min="0" max="120" required placeholder="e.g. 12"
+                   value="{{ form_values.get('tenure','12') if form_values else '12' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Monthly Charges ($)</label>
+            <input type="number" name="MonthlyCharges" id="MonthlyCharges" min="0" step="0.01" required placeholder="e.g. 70.00"
+                   value="{{ form_values.get('MonthlyCharges','70.00') if form_values else '70.00' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Total Charges ($)</label>
+            <input type="number" name="TotalCharges" id="TotalCharges" min="0" step="0.01" required placeholder="Auto-calculated"
+                   value="{{ form_values.get('TotalCharges','840.00') if form_values else '840.00' }}">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Submit Section -->
+      <div class="submit-container">
+        <button type="submit" class="btn-submit">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Run Predictive AI Analysis
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Prediction Result Block -->
+    {% if prediction %}
+    {% set is_churn = 'Yes' in prediction %}
+    <div class="result-card {{ 'danger' if is_churn else 'safe' }}" id="resultSection">
+      <div class="result-icon">{{ '⚠️' if is_churn else '✅' }}</div>
+      <div class="result-body">
+        <div class="result-title">{{ 'High Churn Risk Detected' if is_churn else 'Customer Likely to Remain Loyal' }}</div>
+        <div class="result-detail">Model Output: <strong>{{ prediction }}</strong></div>
+        <div class="result-advice">
+          <strong>Strategic Recommendation:</strong> 
+          {% if is_churn %}
+          This customer exhibits behaviors highly correlated with attrition. We recommend immediate proactive engagement: offer a loyalty discount (e.g., 15% off next bill), suggest transitioning to a 1 or 2-year contract, or resolve any pending service issues.
+          {% else %}
+          The customer profile indicates low risk of near-term churn. Continue standard service support and target with cross-sell campaigns for high-tier addon services.
+          {% endif %}
+        </div>
+      </div>
+      <div class="result-badge {{ 'badge-danger' if is_churn else 'badge-safe' }}">
+        {{ 'AT RISK' if is_churn else 'SECURED' }}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="footer">
+      Powered by Random Forest Engine &bull; SMOTE Oversampling &bull; SHAP Explainability &mdash; <span>ChurnIQ Dashboard v1.2</span>
+    </footer>
+
+  </div>
+
+  <!-- Smart auto-calculation of Total Charges -->
+  <script>
+    const tenureInput = document.getElementById('tenure');
+    const monthlyInput = document.getElementById('MonthlyCharges');
+    const totalInput = document.getElementById('TotalCharges');
+
+    function calculateTotal() {
+      const tenure = parseFloat(tenureInput.value) || 0;
+      const monthly = parseFloat(monthlyInput.value) || 0;
+      if (tenure > 0 && monthly > 0) {
+        totalInput.value = (tenure * monthly).toFixed(2);
+      }
+    }
+
+    tenureInput.addEventListener('input', calculateTotal);
+    monthlyInput.addEventListener('input', calculateTotal);
+
+    // Scroll to results automatically if they exist
+    window.addEventListener('DOMContentLoaded', () => {
+      const resultBlock = document.getElementById('resultSection');
+      if (resultBlock) {
+        resultBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  </script>
+
+</body>
+</html>

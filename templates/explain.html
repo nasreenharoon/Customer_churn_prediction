@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChurnIQ — Explainable AI (XAI)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- Animated background blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="page-wrapper">
+
+    <!-- Top Navigation Bar -->
+    <nav class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-dot"></span>
+        ChurnIQ
+      </div>
+      <div class="nav-links">
+        <a href="/">📈 Analytics Dashboard</a>
+        <a href="/predict">🧠 AI Prediction Engine</a>
+        <a href="/explain" class="active">🛡️ Explainable AI</a>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="hero">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        SHAP (SHapley Additive exPlanations)
+      </div>
+      <h1>Explainable AI (XAI)</h1>
+      <p class="hero-sub">We utilize cooperative game theory to unpack the black box of machine learning. Explore how individual customer attributes contribute to predictions.</p>
+    </header>
+
+    <!-- Explainability Grid -->
+    <div class="dashboard-grid">
+      
+      <!-- Feature Importances SVG -->
+      <div class="section-card wide-card">
+        <div class="section-header">
+          <div class="section-icon">📈</div>
+          <h3>Global Feature Importances</h3>
+        </div>
+        <p class="card-desc">Calculated by measuring Gini impurity reduction across all randomized decision trees. Features at the top represent the strongest predictors of churn.</p>
+        <div class="media-wrapper">
+          <img src="{{ url_for('static', filename='feature_importances.svg') }}" alt="Feature Importances Chart" class="svg-result-img">
+        </div>
+      </div>
+
+      <!-- Confusion Matrix SVG -->
+      <div class="section-card wide-card">
+        <div class="section-header">
+          <div class="section-icon">🎛️</div>
+          <h3>Confusion Matrix (Test Evaluation)</h3>
+        </div>
+        <p class="card-desc">Shows actual vs. predicted values evaluated on a 20% test subset. Minimizing False Negatives (actual churners missed by the model) was prioritized using SMOTE balancing.</p>
+        <div class="media-wrapper">
+          <img src="{{ url_for('static', filename='confusion_matrix.svg') }}" alt="Confusion Matrix" class="svg-result-img">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Performance Details and Definitions -->
+    <div class="section-card full-width-card">
+      <div class="section-header">
+        <div class="section-icon">📜</div>
+        <h3>Model Performance Metrics</h3>
+      </div>
+      <div class="metrics-info-grid">
+        <div class="metric-info-box">
+          <div class="metric-name">Accuracy (77%)</div>
+          <p>The percentage of total correct predictions. While baseline models without class-balancing report ~80% accuracy, they are highly biased. Our model trades 3% accuracy for a balanced decision boundary.</p>
+        </div>
+        <div class="metric-info-box">
+          <div class="metric-name">Precision (56% Churn)</div>
+          <p>The fraction of predicted churners who actually churned. Higher precision reduces wasted promotional campaign spend by targeting only the correct users.</p>
+        </div>
+        <div class="metric-info-box">
+          <div class="metric-name">Recall (70% Churn)</div>
+          <p>The fraction of actual churners identified by the model. **This is our primary KPI.** Maximizing recall ensures that we capture 70% of customers planning to leave.</p>
+        </div>
+        <div class="metric-info-box">
+          <div class="metric-name">F1-Score (62% Churn)</div>
+          <p>The harmonic mean of Precision and Recall, proving a balanced predictive quality over both false positives and false negatives.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      Powered by Random Forest Engine &bull; SMOTE Oversampling &bull; SHAP Explainability &mdash; <span>ChurnIQ Dashboard v1.2</span>
+    </footer>
+
+  </div>
+
+</body>
+</html>
